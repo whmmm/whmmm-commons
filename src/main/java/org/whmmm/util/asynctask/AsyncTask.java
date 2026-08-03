@@ -16,7 +16,7 @@ import java.util.concurrent.Future;
 public class AsyncTask<T> implements Serializable {
 
 
-    private final Future<T> future;
+    private final transient Future<T> future;
 
     /**
      *
@@ -34,7 +34,7 @@ public class AsyncTask<T> implements Serializable {
     @Setter(AccessLevel.PRIVATE)
     private Exception exception;
 
-    public AsyncTask(Future<T> future) {
+    private AsyncTask(Future<T> future) {
         this.future = future;
     }
 
@@ -74,11 +74,11 @@ public class AsyncTask<T> implements Serializable {
         } catch (InterruptedException e) {
             this.setCancelled(true);
             this.setSuccess(false);
-            this.setException(exception);
+            this.setException(e);
             log.error(e.getMessage(), e);
         } catch (ExecutionException e) {
             this.setSuccess(false);
-            this.setException(exception);
+            this.setException(e);
             log.error(e.getMessage(), e);
         }
 
@@ -126,7 +126,7 @@ public class AsyncTask<T> implements Serializable {
             throw e;
         } catch (ExecutionException e) {
             this.setSuccess(false);
-            this.setException(exception);
+            this.setException(e);
             throw e;
         }
 
