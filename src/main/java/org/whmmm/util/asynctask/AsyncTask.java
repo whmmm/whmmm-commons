@@ -50,8 +50,14 @@ public class AsyncTask<T> implements Serializable {
         return new AsyncTask<>(future);
     }
 
+    /**
+     * 调用 {@link Future#get()}, <br/>
+     * 如果有异常，则内部记录异常，并且返回 null
+     *
+     * @return {@link T}
+     */
     @Nullable
-    public T getOrDefault() {
+    public T get() {
         if (this.isSuccess()) {
             return this.getResult();
         }
@@ -80,15 +86,23 @@ public class AsyncTask<T> implements Serializable {
     }
 
     @Nonnull
-    public T get() {
-        T t = this.getOrDefault();
+    public T getNonnull() {
+        T t = this.get();
         if (t == null) {
-            throw new NullPointerException("method `get` return value cannot be null!");
+            throw new NullPointerException("method `getNonnull` return value cannot be null!");
         }
         return t;
     }
 
 
+    /**
+     * 获取结果，抛出异常
+     *
+     * @return {@link T }
+     * @throws InterruptedException see {@link Future#get()}
+     * @throws ExecutionException   see {@link Future#get()}
+     * @throws RuntimeException     缓存 {@link Future#get()} 抛出的异常，重新以 RuntimeException 抛出
+     */
     public T getOrThrows() throws
             InterruptedException, ExecutionException, RuntimeException {
 

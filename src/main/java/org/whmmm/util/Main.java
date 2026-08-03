@@ -27,7 +27,7 @@ public class Main {
 
         ThreadFactory virtualFactory = Thread.ofVirtual().factory();
 
-        factory = virtualFactory;
+        //factory = virtualFactory;
 
         ExecutorService threadPoolExecutor = new ThreadPoolExecutor(
                 cpuCores * 2,
@@ -63,7 +63,7 @@ public class Main {
 
         AsyncTask<Integer> task = AsyncTask.task(future);
 
-        Integer i = task.getOrDefault();
+        Integer i = task.get();
 
 
         System.out.println(i);
