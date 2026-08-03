@@ -1,0 +1,122 @@
+package org.whmmm.util.asynctask;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.Serializable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+@Data
+@Slf4j
+public class AsyncTask<T> implements Serializable {
+
+
+    private final Future<T> future;
+
+    /**
+     *
+     */
+    @Nullable
+    @Setter(AccessLevel.PRIVATE)
+    private T result;
+
+    @Setter(AccessLevel.PRIVATE)
+    private boolean cancelled;
+
+    @Setter(AccessLevel.PRIVATE)
+    private boolean success;
+
+    @Setter(AccessLevel.PRIVATE)
+    private Exception exception;
+
+    public AsyncTask(Future<T> future) {
+        this.future = future;
+    }
+
+
+    /**
+     * 创建一个 {@link AsyncTask} 对象
+     *
+     * @param future
+     * @param <T>
+     * @return
+     */
+    public static <T> AsyncTask<T> task(Future<T> future) {
+        return new AsyncTask<>(future);
+    }
+
+    @Nullable
+    public T getOrDefault() {
+        if (this.isSuccess()) {
+            return this.getResult();
+        }
+
+        if (this.getException() != null) {
+            return null;
+        }
+
+        try {
+            T t = this.future.get();
+            this.setSuccess(true);
+            this.setResult(t);
+            return t;
+        } catch (InterruptedException e) {
+            this.setCancelled(true);
+            this.setSuccess(false);
+            this.setException(exception);
+            log.error(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            this.setSuccess(false);
+            this.setException(exception);
+            log.error(e.getMessage(), e);
+        }
+
+        return null;
+    }
+
+    @Nonnull
+    public T get() {
+        T t = this.getOrDefault();
+        if (t == null) {
+            throw new NullPointerException("method `get` return value cannot be null!");
+        }
+        return t;
+    }
+
+
+    public T getOrThrows() throws
+            InterruptedException, ExecutionException, RuntimeException {
+
+        if (this.isSuccess()) {
+            return this.getResult();
+        }
+        if (this.getException() != null) {
+            throw new RuntimeException(this.getException());
+        }
+
+        T t = null;
+        try {
+            t = this.getFuture().get();
+            this.setSuccess(true);
+            this.setResult(t);
+
+        } catch (InterruptedException e) {
+            this.setSuccess(false);
+            this.setCancelled(true);
+            this.setException(e);
+            throw e;
+        } catch (ExecutionException e) {
+            this.setSuccess(false);
+            this.setException(exception);
+            throw e;
+        }
+
+        return t;
+    }
+
+}
