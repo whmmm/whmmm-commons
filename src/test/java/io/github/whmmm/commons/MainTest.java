@@ -1,10 +1,10 @@
-package org.whmmm.util;
+package io.github.whmmm.commons;
 
 import cn.hutool.core.thread.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.whmmm.util.asynctask.AsyncTask;
-import org.whmmm.util.asynctask.AsyncTaskExecutor;
+import io.github.whmmm.commons.asynctask.AsyncTask;
+import io.github.whmmm.commons.asynctask.AsyncTaskExecutor;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;

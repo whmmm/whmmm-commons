@@ -1,4 +1,4 @@
-package org.whmmm.util.asynctask;
+package io.github.whmmm.commons.asynctask;
 
 import lombok.AccessLevel;
 import lombok.Data;

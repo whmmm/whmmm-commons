@@ -1,4 +1,4 @@
-package org.whmmm.util.linq;
+package io.github.whmmm.commons.linq;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

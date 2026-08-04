@@ -1,11 +1,10 @@
-package org.whmmm.util.linq;
+package io.github.whmmm.commons.linq;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**

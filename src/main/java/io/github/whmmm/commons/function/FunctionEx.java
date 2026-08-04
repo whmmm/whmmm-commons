@@ -1,4 +1,4 @@
-package org.whmmm.util.function;
+package io.github.whmmm.commons.function;
 
 import java.io.Serializable;
 

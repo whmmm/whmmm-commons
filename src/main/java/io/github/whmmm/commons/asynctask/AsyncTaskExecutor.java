@@ -1,10 +1,10 @@
-package org.whmmm.util.asynctask;
+package io.github.whmmm.commons.asynctask;
 
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.whmmm.util.function.Action;
-import org.whmmm.util.function.ConsumerEx;
+import io.github.whmmm.commons.function.Action;
+import io.github.whmmm.commons.function.ConsumerEx;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
