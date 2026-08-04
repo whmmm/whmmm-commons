@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <!-- 定義日誌檔案存放路徑 -->
+    <property name="LOG_PATH" value="./logs"/>
+    <!-- 定義日誌檔案名稱 -->
+    <property name="LOG_FILE_NAME" value="app"/>
+
+    <!-- ================================================================= -->
+    <!-- 1. 主控台輸出 (Console) -> 帶顏色 (%highlight 和 %cyan) -->
+    <!-- ================================================================= -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- %highlight(層級) 會根據 INFO/WARN/ERROR 自動變色，%cyan(執行緒) 顯示青色 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %X{traceId:--} [%cyan(%thread)] %highlight(%-5level) %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ================================================================= -->
+    <!-- 2. 檔案輸出 (File) -> 不帶顏色 (移除顏色標籤，使用滾動策略) -->
+    <!-- ================================================================= -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在寫入的日誌檔案路徑與名稱 -->
+        <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
+
+        <!-- 滾動策略：每日打包，最多保留 30 天，總大小不超過 10GB -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 打包後的檔名格式，如: app.2026-08-04.log.gz -->
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <!-- 檔案保留天數 -->
+            <maxHistory>180</maxHistory>
+            <!-- 所有日誌檔案的總大小上限 -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <!-- 乾淨的純文字格式，絕不包含 ANSI 顏色代碼，方便 grep 搜尋 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %X{traceId:--} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ================================================================= -->
+    <!-- 3. 日誌級別全域設定 (預設套用上述兩個輸出管道) -->
+    <!-- ================================================================= -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>
