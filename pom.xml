@@ -19,12 +19,22 @@
         <spotbugs.version>4.10.3</spotbugs.version>
         <slf4j.version>2.0.18</slf4j.version>
         <logback.version>1.6.1</logback.version>
+        <spring.version>5.3.39</spring.version>
+        <servlet.version>3.0.1</servlet.version>
     </properties>
+
+    <dependencyManagement>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-core</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-json</artifactId>
             <version>${hutool.version}</version>
         </dependency>
 
@@ -63,6 +73,28 @@
             <artifactId>junit</artifactId>
             <version>RELEASE</version>
             <scope>test</scope>
+        </dependency>
+
+        <!--spring-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${servlet.version}</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

@@ -6,6 +6,10 @@
     <!-- 定義日誌檔案名稱 -->
     <property name="LOG_FILE_NAME" value="app"/>
 
+
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %X{traceId:--} [%thread] %-5level %logger{36} - %msg%n"/>
+
     <!-- ================================================================= -->
     <!-- 1. 主控台輸出 (Console) -> 帶顏色 (%highlight 和 %cyan) -->
     <!-- ================================================================= -->
@@ -36,7 +40,33 @@
 
         <encoder>
             <!-- 乾淨的純文字格式，絕不包含 ANSI 顏色代碼，方便 grep 搜尋 -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %X{traceId:--} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ================================================================= -->
+    <!-- 3. 新增：獨立 ERROR 日誌檔案輸出 (ERROR_FILE) -> 只收 ERROR (純文字) -->
+    <!-- ================================================================= -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 獨立的錯誤日誌檔名 -->
+        <file>${LOG_PATH}/${LOG_FILE_NAME}_error.log</file>
+
+        <!-- 核心：層級過濾器 (LevelFilter) -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>  <!-- 如果是 ERROR 級別就接收 -->
+            <onMismatch>DENY</onMismatch> <!-- 如果不是 ERROR 級別就無情拒絕 -->
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 錯誤日誌同樣每日備份 -->
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}_error.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>180</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
@@ -47,6 +77,7 @@
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </root>
 
 </configuration>
