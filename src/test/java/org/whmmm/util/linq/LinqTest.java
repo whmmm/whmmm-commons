@@ -3,6 +3,7 @@ package org.whmmm.util.linq;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 public class LinqTest {
 
@@ -24,6 +25,19 @@ public class LinqTest {
         List<UserScore> sort = list.orderByDescending(x -> x.getScore())
                 .thenByDescending(x -> x.getAge())
                 .toList();
+
+        Map<String, List<UserScore>> sexMap = list.groupBy(x -> x.getSex());
+
+        for (Map.Entry<String, List<UserScore>> entry : sexMap.entrySet()) {
+            String sex = entry.getKey();
+            LinqList<UserScore> linq = LinqList.toLinq(entry.getValue());
+
+            List<UserScore> temp = linq.orderByDescending(x -> x.getScore())
+                    .thenByDescending(x -> x.getAge())
+                    .toList();
+
+            System.out.println(temp);
+        }
 
 
         System.out.println(sort);
