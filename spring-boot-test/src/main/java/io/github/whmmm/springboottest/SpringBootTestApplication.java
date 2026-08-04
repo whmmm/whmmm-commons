@@ -1,0 +1,18 @@
+package io.github.whmmm.springboottest;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication(
+        scanBasePackages = {
+                "io.github.whmmm",
+                "io.github.whmmm.commons.spring3"
+        }
+)
+public class SpringBootTestApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootTestApplication.class, args);
+    }
+
+}

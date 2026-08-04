@@ -1,4 +1,4 @@
-package io.github.whmmm.commons.spring.filter;
+package io.github.whmmm.commons.spring2.filter;
 
 import cn.hutool.core.util.RandomUtil;
 import io.github.whmmm.commons.servlet.RepeatReadRequestWrapperFilter;
