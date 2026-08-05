@@ -160,12 +160,15 @@ public final class RequestLog {
     }
 
     public String dumpResult() {
+        final String queryStr = this.queryString == null || this.queryString.isEmpty() ? "" :
+                ("?" + this.queryString);
+
         return lineSeparator +
                 FORMAT_LINE +
                 lineSeparator +
                 "### " + REQUEST_TRACE_ID + ":" + requestId +
                 " -- http log --" + lineSeparator +
-                type + "  " + url + lineSeparator +
+                type + "  " + url + queryStr + lineSeparator +
                 lineSeparator +
                 "Result: " + lineSeparator +
                 this.getResult() + lineSeparator + FORMAT_LINE;
