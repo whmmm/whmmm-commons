@@ -1,0 +1,21 @@
+@host=http://localhost:8080
+
+### 测试 get
+GET {{host}}/test/test-get?name=get&age=10Y
+
+
+### 测试 post form
+POST {{host}}/test/test-post
+Content-Type: application/x-www-form-urlencoded
+
+name=post-form&age=12Y
+
+
+### 测试 post json
+POST {{host}}/test/test-post-json
+Content-Type: application/json
+
+{
+  "name": "post-json",
+  "age": "13Y"
+}
