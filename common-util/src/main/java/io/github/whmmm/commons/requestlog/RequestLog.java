@@ -26,6 +26,8 @@ public final class RequestLog {
 
     private static final String lineSeparator = System.lineSeparator();
 
+    private static final String FORMAT_LINE = "=================================================================";
+
     /**
      * 请求开始时间
      * <p><b> author: whmmm </b></p>
@@ -56,6 +58,8 @@ public final class RequestLog {
      */
     private String param;
 
+    private String contentType;
+
     /**
      * {@code post json} 时的参数
      * <br/>
@@ -85,7 +89,7 @@ public final class RequestLog {
 
     public String dumpToLogStr(StringBuilder sb) {
         sb.append(lineSeparator);
-        sb.append("=================================================================")
+        sb.append(FORMAT_LINE)
                 .append(lineSeparator);
         sb.append("### ").append(REQUEST_TRACE_ID + ":").append(requestId);
         sb.append(" -- http log --").append(lineSeparator);
@@ -107,7 +111,7 @@ public final class RequestLog {
             sb.append(lineSeparator);
         }
 
-        if (body == null) {
+        if (body == null || "".equals(body)) {
             sb.append(lineSeparator);
             sb.append(param);
         } else {
@@ -137,7 +141,7 @@ public final class RequestLog {
             sb.append("响应的结果为: ").append(result);
             sb.append(lineSeparator);
         }
-        sb.append("=================================================================");
+        sb.append(FORMAT_LINE);
 
         return sb.toString();
     }

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "io.github.whmmm",
+                "io.github.whmmm.springboottest",
                 "io.github.whmmm.commons.spring3"
         }
 )

@@ -3,6 +3,9 @@ package io.github.whmmm.commons.spring3.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -11,6 +14,8 @@ import java.io.IOException;
  * <p><b> author: whmmm </b></p>
  * <p><b> date  : 2024-11-07 9:10 </b></p>
  */
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
 class RepeatReadRequestWrapperFilter implements Filter {
 
     @Override

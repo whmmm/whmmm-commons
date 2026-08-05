@@ -87,6 +87,7 @@ public final class RequestLogUtil implements Serializable {
         requestLog.setUrl(request.getRequestURI());
         requestLog.setType(request.getMethod());
         requestLog.setParam(urlBuilder.getQueryStr());
+        requestLog.setContentType(request.getContentType());
         if (bodyBytes != null) {
             requestLog.setBody(new String(bodyBytes, StandardCharsets.UTF_8));
         }
