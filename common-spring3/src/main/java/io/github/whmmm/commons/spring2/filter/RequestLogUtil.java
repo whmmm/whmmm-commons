@@ -1,4 +1,4 @@
-package io.github.whmmm.commons.spring3.filter;
+package io.github.whmmm.commons.spring2.filter;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.net.url.UrlBuilder;
