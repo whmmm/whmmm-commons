@@ -16,6 +16,7 @@
         <maven.compiler.source>${compile.version}</maven.compiler.source>
         <maven.compiler.target>${compile.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.version>6.2.19</spring.version>
     </properties>
 
     <dependencies>
@@ -28,13 +29,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>6.2.19</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>6.2.19</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -62,6 +63,12 @@
             <version>3.0.2</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
         </dependency>
         <!-- public dependencies end -->
 

@@ -1,11 +1,14 @@
-package io.github.whmmm.commons.spring2.filter;
+package io.github.whmmm.commons.spring3.filter;
 
 
 import cn.hutool.core.io.IoUtil;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 
 
-
-import javax.servlet.ServletInputStream;import javax.servlet.http.HttpServletRequest;import javax.servlet.http.HttpServletRequestWrapper;import java.io.*;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 class CachedBodyHttpServletRequestWrapper extends HttpServletRequestWrapper {
@@ -50,6 +53,22 @@ class CachedBodyHttpServletRequestWrapper extends HttpServletRequestWrapper {
         @Override
         public int read() throws IOException {
             return byteArrayInputStream.read();
+        }
+
+
+        @Override
+        public boolean isFinished() {
+            return byteArrayInputStream.available() == 0;
+        }
+
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setReadListener(ReadListener readListener) {
+            throw new UnsupportedOperationException("Async read is not supported");
         }
     }
 }

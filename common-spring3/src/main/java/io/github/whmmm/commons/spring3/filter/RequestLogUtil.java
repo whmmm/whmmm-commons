@@ -1,9 +1,9 @@
-package io.github.whmmm.commons.spring2.filter;
+package io.github.whmmm.commons.spring3.filter;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.net.url.UrlBuilder;
 import io.github.whmmm.commons.requestlog.RequestLog;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.web.context.request.RequestContextHolder;
