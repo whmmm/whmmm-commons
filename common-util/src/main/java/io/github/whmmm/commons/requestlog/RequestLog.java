@@ -60,6 +60,8 @@ public final class RequestLog {
 
     private String contentType;
 
+    private String queryString;
+
     /**
      * {@code post json} 时的参数
      * <br/>
@@ -94,6 +96,12 @@ public final class RequestLog {
         sb.append("### ").append(REQUEST_TRACE_ID + ":").append(requestId);
         sb.append(" -- http log --").append(lineSeparator);
         sb.append(type).append("  ").append(url);
+
+        if (queryString != null && !queryString.isEmpty()) {
+            sb.append("?").append(queryString);
+        }
+
+
         // 请求头
         sb.append(lineSeparator);
 
@@ -149,5 +157,17 @@ public final class RequestLog {
 
     public String dumpToLogStr() {
         return this.dumpToLogStr(new StringBuilder());
+    }
+
+    public String dumpResult() {
+        return lineSeparator +
+                FORMAT_LINE +
+                lineSeparator +
+                "### " + REQUEST_TRACE_ID + ":" + requestId +
+                " -- http log --" + lineSeparator +
+                type + "  " + url + lineSeparator +
+                lineSeparator +
+                "Result: " + lineSeparator +
+                this.getResult() + lineSeparator + FORMAT_LINE;
     }
 }

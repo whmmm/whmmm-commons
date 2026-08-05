@@ -7,16 +7,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.context.request.WebRequestInterceptor;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -25,17 +24,27 @@ import java.io.IOException;
 @Component
 class RequestLogFilter extends OncePerRequestFilter {
 
-    @Configuration
-    public static class RequestLogInterceptor implements HandlerInterceptor, WebMvcConfigurer {
+    @RestControllerAdvice
+    public static class RequestLogRestAdvice implements ResponseBodyAdvice<Object> {
         @Override
-        public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
-            System.out.println("xx");
+        public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+            return true;
         }
 
+        @Nullable
         @Override
-        public void addInterceptors(InterceptorRegistry registry) {
-            RequestLogInterceptor interceptor = new RequestLogInterceptor();
-            registry.addInterceptor(interceptor);
+        public Object beforeBodyWrite(@Nullable Object body,
+                                      MethodParameter returnType,
+                                      MediaType selectedContentType,
+                                      Class<? extends HttpMessageConverter<?>> selectedConverterType,
+                                      ServerHttpRequest request, ServerHttpResponse response) {
+            if (body instanceof String) {
+                RequestLog requestLog = RequestLogUtil.REQUEST_LOG.get();
+                if (requestLog != null) {
+                    requestLog.setResult((String) body);
+                }
+            }
+            return body;
         }
     }
 
@@ -56,6 +65,11 @@ class RequestLogFilter extends OncePerRequestFilter {
 
             this.doFilter(request, response, chain);
         } finally {
+            RequestLog requestLog = RequestLogUtil.REQUEST_LOG.get();
+            if (requestLog != null && requestLog.getResult() != null) {
+                log.info(requestLog.dumpResult());
+            }
+
             RequestLogUtil.removeTraceId();
         }
     }

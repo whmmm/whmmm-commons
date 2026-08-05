@@ -19,3 +19,12 @@ Content-Type: application/json
   "name": "post-json",
   "age": "13Y"
 }
+
+### 测试 post json 携带参数
+POST {{host}}/test/test-post-json?name=111&xxxxxxxxxxxx
+Content-Type: application/json
+
+{
+  "name": "post-json-with-params",
+  "age": "12X"
+}

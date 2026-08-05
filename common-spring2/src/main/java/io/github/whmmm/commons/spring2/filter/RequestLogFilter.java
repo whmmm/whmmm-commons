@@ -2,19 +2,54 @@ package io.github.whmmm.commons.spring2.filter;
 
 import cn.hutool.core.util.RandomUtil;
 import io.github.whmmm.commons.requestlog.RequestLog;
+
+import javax.annotation.Nullable;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import java.io.IOException;
 
 @Slf4j
 @Component
 class RequestLogFilter extends OncePerRequestFilter {
+
+
+    @RestControllerAdvice
+    public static class RequestLogRestAdvice implements ResponseBodyAdvice<Object> {
+        @Override
+        public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+            return true;
+        }
+
+        @Nullable
+        @Override
+        public Object beforeBodyWrite(@Nullable Object body,
+                                      MethodParameter returnType,
+                                      MediaType selectedContentType,
+                                      Class<? extends HttpMessageConverter<?>> selectedConverterType,
+                                      ServerHttpRequest request, ServerHttpResponse response) {
+            if (body instanceof String) {
+                RequestLog requestLog = RequestLogUtil.REQUEST_LOG.get();
+                if (requestLog != null) {
+                    requestLog.setResult((String) body);
+                }
+            }
+            return body;
+        }
+    }
 
 
     @Override
@@ -33,6 +68,11 @@ class RequestLogFilter extends OncePerRequestFilter {
 
             this.doFilter(request, response, chain);
         } finally {
+            RequestLog requestLog = RequestLogUtil.REQUEST_LOG.get();
+            if (requestLog != null && requestLog.getResult() != null) {
+                log.info(requestLog.dumpResult());
+            }
+
             RequestLogUtil.removeTraceId();
         }
     }
