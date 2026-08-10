@@ -34,15 +34,16 @@ public class MainTest {
         //factory = virtualFactory;
 
         AsyncTaskExecutor executor = new AsyncTaskExecutor();
-        executor.setBefore(() -> {
-            log.info("before async task execution...");
-        });
-        executor.setAfter((x) -> {
-            log.info("after async task execution...");
-            log.info("return value is {}", x);
-        });
-        executor.setError((e) -> {
-            log.error(e.getMessage(), e);
+        executor.setDecorator((x) -> {
+            return () -> {
+                try {
+                    return x.call();
+                } catch (Exception e) {
+                    return null;
+                } finally {
+
+                }
+            };
         });
 
         ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();

@@ -1,11 +1,7 @@
 package io.github.whmmm.commons.asynctask;
 
-
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import io.github.whmmm.commons.function.Action;
-import io.github.whmmm.commons.function.ConsumerEx;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.*;
@@ -16,16 +12,12 @@ public final class AsyncTaskExecutor {
     private final ExecutorService executorService;
 
     @Setter
-    private Action before;
-    @Setter
-    private ConsumerEx after;
-    @Setter
-    private ConsumerEx<Exception> error;
+    private Decorator decorator;
 
     public AsyncTaskExecutor(@Nullable ExecutorService executorService) {
         ExecutorService service = executorService;
         if (service == null) {
-            service = this.createDefaultExecutorService("async-task-executor--");
+            service = createExecutorService("async-task-executor--");
         }
 
         this.executorService = service;
@@ -35,7 +27,7 @@ public final class AsyncTaskExecutor {
         this(null);
     }
 
-    private ExecutorService createDefaultExecutorService(String prefix) {
+    public static ExecutorService createExecutorService(String prefix) {
         ThreadFactory factory = new NamedThreadFactory(prefix, false);
 
         int cpuCores = Runtime.getRuntime().availableProcessors();
@@ -44,7 +36,7 @@ public final class AsyncTaskExecutor {
                 cpuCores * 16,
                 180,
                 TimeUnit.SECONDS,
-                new LinkedBlockingDeque<>(1000),
+                new LinkedBlockingQueue<>(1000),
                 factory,
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
@@ -54,59 +46,46 @@ public final class AsyncTaskExecutor {
 
     @SuppressWarnings({"unchecked"})
     public <T> AsyncTask<T> submit(Callable<T> callable) {
-        return AsyncTask.task(executorService.submit(() -> {
+        Callable<T> call = callable;
+        if (this.decorator != null) {
             try {
-                if (before != null) {
-                    before.perform();
-                }
-                T t = callable.call();
-
-                if (after != null) {
-                    after.accept(t);
-                }
-
-                return t;
+                call = decorator.decorate(call);
             } catch (Exception e) {
-                if (error != null) {
-                    error.accept(e);
-                    return null;
-                } else {
-                    throw e;
-                }
-            } finally {
-
+                throw new RuntimeException(e);
             }
-        }));
+        }
+
+        return AsyncTask.task(executorService.submit(call));
     }
 
     @SuppressWarnings({"unchecked"})
     public <T> AsyncTask<T> submit(Callable<T> callable,
                                    @Nonnull Semaphore semaphore) {
-        return AsyncTask.task(executorService.submit(() -> {
+        Callable<T> call = () -> {
             try {
                 semaphore.acquire();
-                if (before != null) {
-                    before.perform();
-                }
-                T t = callable.call();
-                if (after != null) {
-                    after.accept(t);
-                }
-                return t;
-            } catch (Exception e) {
-                if (error != null) {
-                    error.accept(e);
-                    return null;
-                } else {
-                    throw e;
-                }
+                return callable.call();
             } finally {
                 semaphore.release();
             }
-        }));
+        };
+        if (this.decorator != null) {
+            try {
+                call = decorator.decorate(call);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return AsyncTask.task(executorService.submit(call));
     }
 
     public void close() {
         this.executorService.close();
+    }
+
+
+    public interface Decorator<T> {
+        Callable<T> decorate(Callable<T> callable) throws Exception;
     }
 }
