@@ -2,6 +2,7 @@ package io.github.whmmm.commons.spring3.filter;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.net.url.UrlBuilder;
+import cn.hutool.core.util.RandomUtil;
 import io.github.whmmm.commons.requestlog.RequestLog;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -107,5 +108,27 @@ public final class RequestLogUtil implements Serializable {
             request.removeAttribute(MDC_TRACE_ID);
         }
         REQUEST_LOG.remove();
+    }
+
+    /**
+     * 打印日志，并清理 ThreadLocal 变量
+     */
+    static void dumpResultAndClear() {
+        RequestLog requestLog = RequestLogUtil.REQUEST_LOG.get();
+        if (requestLog != null && requestLog.getResult() != null) {
+            log.info(requestLog.dumpResult());
+        }
+
+        RequestLogUtil.removeTraceId();
+    }
+
+    static String initTraceIdIfAbsent() {
+        String traceId = RequestLogUtil.getTraceId();
+        if (traceId.isEmpty()) {
+            RequestLogUtil.setTraceId(
+                    String.format("t%s", RandomUtil.randomString(6))
+            );
+        }
+        return traceId;
     }
 }

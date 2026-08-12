@@ -54,23 +54,13 @@ class RequestLogFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
         try {
-            String traceId = RequestLogUtil.getTraceId();
-            if (traceId.isEmpty()) {
-                RequestLogUtil.setTraceId(
-                        String.format("t%s", RandomUtil.randomString(6))
-                );
-            }
+            RequestLogUtil.initTraceIdIfAbsent();
             RequestLog requestLog = RequestLogUtil.buildRequestLog(request);
             log.info(requestLog.dumpToLogStr());
 
             this.doFilter(request, response, chain);
         } finally {
-            RequestLog requestLog = RequestLogUtil.REQUEST_LOG.get();
-            if (requestLog != null && requestLog.getResult() != null) {
-                log.info(requestLog.dumpResult());
-            }
-
-            RequestLogUtil.removeTraceId();
+            RequestLogUtil.dumpResultAndClear();
         }
     }
 }
