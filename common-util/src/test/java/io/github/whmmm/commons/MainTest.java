@@ -4,18 +4,15 @@ import cn.hutool.core.thread.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import io.github.whmmm.commons.asynctask.AsyncTask;
-import io.github.whmmm.commons.asynctask.AsyncTaskExecutor;
+import io.github.whmmm.commons.asynctask.AsyncTaskExecutorService;
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 @Slf4j
 public class MainTest {
     @Test
-    public void test() {
+    public void test() throws Exception{
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
         IO.println(String.format("Hello and welcome!"));
@@ -33,11 +30,11 @@ public class MainTest {
 
         //factory = virtualFactory;
 
-        AsyncTaskExecutor executor = new AsyncTaskExecutor();
+        AsyncTaskExecutorService executor = new AsyncTaskExecutorService();
         executor.setDecorator((x) -> {
             return () -> {
                 try {
-                    return x.call();
+                    return x.getCallable().call();
                 } catch (Exception e) {
                     return null;
                 } finally {
@@ -62,7 +59,7 @@ public class MainTest {
             throw new RuntimeException(e);
         }
 
-        AsyncTask<Integer> task = executor.submit(() -> {
+        Future<Integer> task = executor.submit(() -> {
             System.out.println("xxxxxx");
             return 1;
         });

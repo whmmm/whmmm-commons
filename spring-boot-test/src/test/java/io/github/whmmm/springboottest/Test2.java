@@ -1,10 +1,11 @@
 package io.github.whmmm.springboottest;
 
-import io.github.whmmm.commons.asynctask.AsyncTaskExecutor;
+import io.github.whmmm.commons.asynctask.AsyncTaskExecutorService;
 import io.github.whmmm.commons.spring3.filter.RequestLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 @Slf4j
@@ -12,7 +13,7 @@ public class Test2 {
     @Test
     public void test() {
         RequestLogUtil.setTraceId("123");
-        AsyncTaskExecutor executor = new AsyncTaskExecutor(
+        AsyncTaskExecutorService executor = new AsyncTaskExecutorService(
                 Executors.newVirtualThreadPerTaskExecutor()
         );
         executor.setDecorator(t -> {
