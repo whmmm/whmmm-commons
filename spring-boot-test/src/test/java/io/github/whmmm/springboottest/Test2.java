@@ -5,7 +5,6 @@ import io.github.whmmm.commons.spring3.filter.RequestLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 @Slf4j
@@ -24,7 +23,7 @@ public class Test2 {
                 try {
                     RequestLogUtil.setTraceId(traceId);
                     log.warn("子线程内部，traceId:{}", traceId);
-                    return t.call();
+                    return t.getCallable().call();
                 } finally {
                     RequestLogUtil.removeTraceId();
                 }

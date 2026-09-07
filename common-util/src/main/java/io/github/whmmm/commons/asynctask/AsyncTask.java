@@ -35,10 +35,10 @@ public class AsyncTask<T> implements Serializable {
         try {
             t = this.getAndThrows();
         } catch (ExecutionException e) {
-            log.error("async task error", e);
+            log.error("async task error: {}", e.getMessage(), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("async task interrupted", e);
+            log.error("async task interrupted: {}", e.getMessage(), e);
         }
         return t;
     }
