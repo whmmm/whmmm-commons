@@ -1,1 +1,1 @@
-package io.github.whmmm.commons.spring2;
+package io.github.whmmm.commons.spring3;

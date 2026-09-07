@@ -34,7 +34,7 @@ public class AsyncTaskParam implements Serializable {
     private String taskName;
 
     private Object extraParam;
-    private final Map<String, Object> map = new LinkedHashMap<>();
+    private Map<String, Object> map = new LinkedHashMap<>();
 
     public void start() {
         if (this.isStarted()) {
