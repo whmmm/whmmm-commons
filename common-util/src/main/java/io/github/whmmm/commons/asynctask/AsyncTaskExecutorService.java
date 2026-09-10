@@ -116,7 +116,7 @@ public final class AsyncTaskExecutorService {
             }
         }
         try {
-            this.executorService.submit(task);
+            this.executorService.execute(task);
         } catch (RuntimeException e) {
             if (semaphore != null) {
                 semaphore.release();
