@@ -3,7 +3,6 @@ package io.github.whmmm.commons;
 import cn.hutool.core.thread.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import io.github.whmmm.commons.asynctask.AsyncTask;
 import io.github.whmmm.commons.asynctask.AsyncTaskExecutorService;
 
 import java.util.*;
@@ -31,7 +30,7 @@ public class MainTest {
         //factory = virtualFactory;
 
         AsyncTaskExecutorService executor = new AsyncTaskExecutorService();
-        executor.setDecorator((x) -> {
+        executor.setTaskDecorator((x) -> {
             return () -> {
                 try {
                     return x.getCallable().call();

@@ -1,10 +1,12 @@
 package io.github.whmmm.springboottest;
 
 import io.github.whmmm.commons.asynctask.AsyncTaskExecutorService;
+import io.github.whmmm.commons.asynctask.TaskScope;
 import io.github.whmmm.commons.spring3.filter.RequestLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 
 @Slf4j
@@ -12,10 +14,10 @@ public class Test2 {
     @Test
     public void test() {
         RequestLogUtil.setTraceId("123");
-        AsyncTaskExecutorService executor = new AsyncTaskExecutorService(
+        AsyncTaskExecutorService executor = AsyncTaskExecutorService.createTaskExecutor(
                 Executors.newVirtualThreadPerTaskExecutor()
         );
-        executor.setDecorator(t -> {
+        executor.setTaskDecorator(t -> {
             System.out.println("decorator");
             String traceId = RequestLogUtil.getTraceId();
             log.warn("父线程");
@@ -33,5 +35,17 @@ public class Test2 {
             log.warn("hello world");
             return 0;
         });
+
+        TaskScope<Object> scope = executor.scope(1);
+        for (int i = 0; i < 20; i++) {
+            final Integer v = i;
+            scope.submit(() -> {
+                System.out.println("thread " + Thread.currentThread().getName() + "~~~");
+                return v;
+            });
+        }
+        List<Object> list = scope.get();
+
+        System.out.println(list);
     }
 }

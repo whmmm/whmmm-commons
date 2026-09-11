@@ -13,13 +13,13 @@ public final class AsyncTaskExecutorService {
     private final ExecutorService executorService;
 
     @Setter
-    private AsyncTaskDecorator decorator;
+    private AsyncTaskDecorator taskDecorator;
 
-    public AsyncTaskExecutorService(@Nullable ExecutorService executorService) {
+    AsyncTaskExecutorService(@Nullable ExecutorService executorService) {
         ExecutorService service = executorService;
         if (service == null) {
             int cpuCores = Runtime.getRuntime().availableProcessors();
-            service = createExecutorService(
+            service = createThreadExecutor(
                     "async-task-executor--",
                     cpuCores * 2,
                     cpuCores * 4
@@ -33,19 +33,31 @@ public final class AsyncTaskExecutorService {
         this(null);
     }
 
-    public static AsyncTaskExecutorService createTaskExecutorService(String prefix,
-                                                                     int coreSize,
-                                                                     int maxSize,
-                                                                     AsyncTaskDecorator decorator) {
-        ExecutorService executorService = createExecutorService(prefix, coreSize, maxSize);
-        AsyncTaskExecutorService executor = new AsyncTaskExecutorService(executorService);
-        executor.setDecorator(decorator);
+    /* ------------ static method start -------------- */
+
+    public static AsyncTaskExecutorService createTaskExecutor(String prefix,
+                                                              int coreSize,
+                                                              int maxSize,
+                                                              AsyncTaskDecorator decorator) {
+        ExecutorService executorService = createThreadExecutor(prefix, coreSize, maxSize);
+        return createTaskExecutor(executorService, decorator);
+    }
+
+
+    public static AsyncTaskExecutorService createTaskExecutor(ExecutorService service,
+                                                              AsyncTaskDecorator decorator) {
+        AsyncTaskExecutorService executor = new AsyncTaskExecutorService(service);
+        executor.setTaskDecorator(decorator);
         return executor;
     }
 
-    public static ExecutorService createExecutorService(String prefix,
-                                                        int coreSize,
-                                                        int maxSize) {
+    public static AsyncTaskExecutorService createTaskExecutor(ExecutorService service) {
+        return createTaskExecutor(service, null);
+    }
+
+    public static ExecutorService createThreadExecutor(String prefix,
+                                                       int coreSize,
+                                                       int maxSize) {
         ThreadFactory factory = new NamedThreadFactory(prefix, false);
 
         // int cpuCores = Runtime.getRuntime().availableProcessors();
@@ -59,6 +71,8 @@ public final class AsyncTaskExecutorService {
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }
+
+    /* ------------- static method end ------------- */
 
 
     @SuppressWarnings({"unchecked"})
@@ -94,12 +108,12 @@ public final class AsyncTaskExecutorService {
             return null;
         };
 
-        if (this.decorator != null) {
+        if (this.taskDecorator != null) {
             try {
                 final AsyncTaskDecorator.AsyncTaskContext context = new AsyncTaskDecorator.AsyncTaskContext();
                 context.setCallable(taskCallable);
                 context.setParam(taskParam);
-                taskCallable = this.decorator.decorate(context);
+                taskCallable = this.taskDecorator.decorate(context);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -154,5 +168,10 @@ public final class AsyncTaskExecutorService {
         param.setTraceId("task-" + RandomUtil.randomStringUpper(6));
 
         return param;
+    }
+
+    public <T> TaskScope<T> scope(int concurrency) {
+        Semaphore semaphore = new Semaphore(concurrency);
+        return new TaskScope<>(semaphore, this);
     }
 }
