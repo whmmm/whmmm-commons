@@ -3,6 +3,7 @@ package io.github.whmmm.commons.asynctask;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -56,8 +57,8 @@ public class TaskScope<T> {
         List result = new ArrayList<>();
         List<T> ts = this.get();
         for (T t : ts) {
-            if (t instanceof List) {
-                result.addAll((List) t);
+            if (t instanceof Collection) {
+                result.addAll((Collection) t);
             } else {
                 result.add(t);
             }
